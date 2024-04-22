@@ -42,5 +42,20 @@ public class AnimalControllers : ControllerBase
         }
         return Ok(animals);
     }
-    
+
+    [HttpPost]
+    public IActionResult AddAnimal(AddAnimal addAnimal)
+    {
+        using SqlConnection connection = new SqlConnection(_configuration.GetConnectionString("Default"));
+        connection.Open();
+
+        SqlCommand command = new SqlCommand();
+        command.Connection = connection;
+        command.CommandText = $"INSERT INTO Animal VALUES(@animalName, '', '', '')";
+        command.Parameters.AddWithValue("@animalName", addAnimal.Name);
+
+        command.ExecuteNonQuery();
+
+        return Created();
+    }
 }
