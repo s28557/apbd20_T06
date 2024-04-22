@@ -58,6 +58,38 @@ public class AnimalControllers : ControllerBase
 
         return Created();
     }
+
+    [HttpPut("{idAnimal}")]
+    public IActionResult UpdateAnimal(int idAnimal, UpdateAnimal updateAnimal)
+    {
+        using SqlConnection connection = new SqlConnection(_configuration.GetConnectionString("Default"));
+        connection.Open();
+
+        SqlCommand command = new SqlCommand();
+        command.Connection = connection;
+        command.CommandText = @"UPDATE Animal
+                                SET Name = @animalName,
+                                    Description = @animalDescription,
+                                    Category = @animalCategory,
+                                    Area = @animalArea
+                                WHERE IdAnimal = @idAnimal";
+        command.Parameters.AddWithValue("@animalName", updateAnimal.Name);
+        command.Parameters.AddWithValue("@idAnimal", updateAnimal.Description);
+        command.Parameters.AddWithValue("@idAnimal", updateAnimal.Category);
+        command.Parameters.AddWithValue("@idAnimal", updateAnimal.Area);
+        command.Parameters.AddWithValue("@idAnimal", idAnimal);
+        
+        int rowsAffected = command.ExecuteNonQuery();
+
+        if (rowsAffected > 0)
+        {
+            return NoContent();
+        }
+        else
+        {
+            return NotFound();
+        }
+    }
     
     [HttpDelete("{idAnimal}")]
     public IActionResult DeleteAnimal(int idAnimal)
