@@ -62,25 +62,23 @@ public class AnimalControllers : ControllerBase
     [HttpDelete("{idAnimal}")]
     public IActionResult DeleteAnimal(int idAnimal)
     {
-        using (SqlConnection connection = new SqlConnection(_configuration.GetConnectionString("Default")))
+        using SqlConnection connection = new SqlConnection(_configuration.GetConnectionString("Default"));
+        connection.Open();
+
+        SqlCommand command = new SqlCommand();
+        command.Connection = connection;
+        command.CommandText = "DELETE FROM Animal WHERE IdAnimal = @idAnimal";
+        command.Parameters.AddWithValue("@idAnimal", idAnimal);
+
+        int rowsAffected = command.ExecuteNonQuery();
+
+        if (rowsAffected > 0)
         {
-            connection.Open();
-
-            SqlCommand command = new SqlCommand();
-            command.Connection = connection;
-            command.CommandText = "DELETE FROM Animal WHERE IdAnimal = @idAnimal";
-            command.Parameters.AddWithValue("@idAnimal", idAnimal);
-
-            int rowsAffected = command.ExecuteNonQuery();
-
-            if (rowsAffected > 0)
-            {
-                return NoContent();
-            }
-            else
-            {
-                return NotFound();
-            }
+            return NoContent();
+        }
+        else
+        {
+            return NotFound();
         }
     }
 
